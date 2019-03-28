@@ -1,0 +1,7 @@
+Marcel Buzau 100 kg rosii 200 kg cartofi
+Popescu Ilfov 300 kg rosii 10 kg cartofi
+Gigel Buzau 60 kg cartofi 30 kg rosii
+Ionel Buzau 410 kg cartofi 120 kg rosii 300 kg castraveti
+Marian Buzau 320 kg rosii 55 kg cartofi
+Alexandru Ploiesti 56 kg cartofi 78 kg rosii
+Grigore Ploiesti 145 kg rosii 234 kg cartofi
