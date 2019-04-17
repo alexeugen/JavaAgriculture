@@ -47,4 +47,13 @@ public class Farmer extends User {
         }
         return false;
     }
+
+    public int getProduction() {
+        int s = 0;
+        for (int i = 0; i < products.size(); i++) {
+           s+=Integer.parseInt(products.get(i).getQuantity());
+
+        }
+        return s;
+    }
 }

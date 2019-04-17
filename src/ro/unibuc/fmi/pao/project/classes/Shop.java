@@ -15,4 +15,16 @@ public class Shop extends User {
     public void addFarmer(Farmer farmer) {
         farmers.add(farmer);
     }
+
+    public void print() {
+        System.out.println(this.getName());
+    }
+
+    public void printFarmers() {
+        for(int i = 0; i < farmers.size(); i++) {
+            farmers.get(i).print();
+        }
+    }
 }
+
+/*    ILY     */

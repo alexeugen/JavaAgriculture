@@ -32,4 +32,5 @@ public abstract class User {
     public String getPhone() {
         return phone;
     }
+
 }
