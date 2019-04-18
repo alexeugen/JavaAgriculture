@@ -4,13 +4,11 @@ import ro.unibuc.fmi.pao.project.abs.User;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 
 public class Handler {
-
+    private Data data = Data.Data();
 
     public void printFarmers(List<Farmer> farmers) {
         for (int i=0; i<farmers.size(); i++) {
@@ -42,21 +40,12 @@ public class Handler {
 
     public void printOptions() {
         System.out.println("Ce doresti draga?");
-        System.out.println("1.Print all Farmers");
-        System.out.println("2.Print all Farmers from ...");
-        System.out.println("3.Print all Farmers that have ...");
-        System.out.println("4.Print all Farmers that have a specific quantity of a product");
-        System.out.println("5.Print all Shops");
-        System.out.println("6.Add farmer to a shop");
-        System.out.println("7.Print all farmers from a shop");
-        System.out.println("8.Make Transaction");
-        System.out.println("9.Print Transactions");
-        System.out.println("10.Print Clients");
-        System.out.println("11.Add farmer");
-        System.out.println("12.Add shop");
-        System.out.println("13.Add client");
+        for(int i = 0; i <= 13; i++) {
+            System.out.println(data.options.get(i));
+        }
 
     }
+
 
     public void printByProduct(List<Farmer> farmers) {
         System.out.println("What product?");
@@ -131,7 +120,7 @@ public class Handler {
         theShop.printFarmers();
     }
 
-    public void makeTransaction(List<Client> clients, List<Farmer> farmers, Set<Transaction> transactions) {
+    public void makeTransaction(List<Client> clients, List<Farmer> farmers, Set<Transaction> transactions) throws IOException {
         System.out.println("What client?");
         Scanner sc = new Scanner(System.in);
         String client = sc.next();
@@ -159,9 +148,8 @@ public class Handler {
                 theFarmer = farmers.get(i);
                 break;
             }
-
         transactions.add(new Transaction(theFarmer, theClient, theProduct));
-
+        data.addTransaction(client, farmer, productName, productQuantity, productMeasure);
 
     }
 

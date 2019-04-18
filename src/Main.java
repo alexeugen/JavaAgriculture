@@ -17,6 +17,7 @@ public class Main {
             handler.printOptions();
             Scanner sc = new Scanner(System.in);
             option = sc.nextInt();
+            data.logOption(option);
             switch (option) {
                 case 1:
                     handler.printFarmers(data.farmers);
@@ -59,6 +60,7 @@ public class Main {
                 default:
                     System.out.println("Please enter one of the options");
                     break;
+
             }
         }
     }
