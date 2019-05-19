@@ -1,14 +1,25 @@
 package ro.unibuc.fmi.pao.project.classes;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ListView;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.*;
+import java.sql.*;
 
+public class Storage {
+    private static Storage single_instance = null;
 
-public class Data {
-    private static Data single_instance = null;
+    Connection myConn = null;
+
 
 
     public List<String> options = new ArrayList<>();
@@ -22,40 +33,59 @@ public class Data {
         }
     });
 
-    private Data()
-    {
+    private ObservableList oListFarmers, oListClients, oListShops;
+    public ListView listViewFarmers, listViewClients, listViewShops;
+
+    private Storage() throws SQLException {
+        try {
+            // 1. Get a connection to database
+            myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo", "root" , "123456");
+        }
+        catch (Exception exc) {
+            exc.printStackTrace();
+        }
 
         this.initializeOptions();
         this.initializeFarmers(farmers);
         this.initializeShops(shops);
         this.initializeClients(clients);
         this.initializeTransactions(transactions);
+        this.initializeComponents();
     }
 
-    public static Data Data()
-    {
+    private void initializeComponents() {
+        oListFarmers = FXCollections.observableArrayList(farmers);
+        listViewFarmers = new ListView(oListFarmers);
+        listViewFarmers.setPrefSize(200, 250);
+        listViewFarmers.setEditable(true);
+
+        oListClients = FXCollections.observableArrayList(clients);
+        listViewClients = new ListView(oListClients);
+        listViewClients.setPrefSize(200, 250);
+        listViewClients.setEditable(true);
+
+        oListShops = FXCollections.observableArrayList(shops);
+        listViewShops= new ListView(oListShops);
+        listViewShops.setPrefSize(200, 250);
+        listViewShops.setEditable(true);
+    }
+
+    public static Storage Storage() throws SQLException {
         if (single_instance == null) {
-            single_instance = new Data();
+            single_instance = new Storage();
         }
         return single_instance;
     }
 
-    private void initializeClients(List<Client> clients) {
-        Scanner sc = null;
-        String workingDir = System.getProperty("user.dir");
-        try {
-            sc = new Scanner(new File(workingDir + "/src/ro/unibuc/fmi/pao/project/files/clients.csv"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    private void initializeClients(List<Client> clients) throws SQLException {
+        // 3. Execute SQL query
+        Statement myStmt = myConn.createStatement();
+        ResultSet myRs = myStmt.executeQuery("select * from clients");
 
-        while (sc.hasNextLine()) {
-            Scanner s2 = new Scanner(sc.nextLine());
-            while (s2.hasNext()) {
-                String name = s2.next();
+        while (myRs.next()) {
+                String name = myRs.getString("name");
                 Client ion = new Client(name);
                 clients.add(ion);
-            }
         }
     }
 
@@ -76,54 +106,42 @@ public class Data {
         options.add("13.Add client");
     }
 
-    private void initializeShops(List<Shop> shops) {
-        Scanner sc = null;
-        String workingDir = System.getProperty("user.dir");
-        try {
-            sc = new Scanner(new File(workingDir + "/src/ro/unibuc/fmi/pao/project/files/shops.csv"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    private void initializeShops(List<Shop> shops) throws SQLException {
+        // 3. Execute SQL query
+        Statement myStmt = myConn.createStatement();
+        ResultSet myRs = myStmt.executeQuery("select * from shops");
 
-        while (sc.hasNextLine()) {
-            Scanner s2 = new Scanner(sc.nextLine());
-            while (s2.hasNext()) {
-                String name = s2.next();
-                Shop ion = new Shop(name);
-                shops.add(ion);
-            }
+        while (myRs.next()) {
+            String name = myRs.getString("name");
+            Shop ion = new Shop(name);
+            shops.add(ion);
         }
     }
 
-    private void initializeFarmers(List<Farmer> farmers) {
+    private void initializeFarmers(List<Farmer> farmers) throws SQLException {
+        // 3. Execute SQL query
+        Statement myStmt = myConn.createStatement();
+        ResultSet myRs = myStmt.executeQuery("select * from farmers");
 
-        Scanner sc = null;
-        String workingDir = System.getProperty("user.dir");
-        try {
-            sc = new Scanner(new File(workingDir + "/src/ro/unibuc/fmi/pao/project/files/farmers.csv"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        // 4. Process the result set
+        while (myRs.next()) {
 
-        while (sc.hasNextLine()) {
-            List<String> line = getRecordFromLine(sc.nextLine());
-            ListIterator<String> iter = line.listIterator();
-            while (iter.hasNext()) {
-
-                String name = iter.next();
-                String city = iter.next();
+                String name = myRs.getString("name");
+                String city = myRs.getString("city");
+                String id = myRs.getString("id");
                 Farmer ion = new Farmer(name, city);
-
-                while (iter.hasNext()) {
-                    String quantity = iter.next();
-                    String measure = iter.next();
-                    String namei = iter.next();
+            Statement myStmtP = myConn.createStatement();
+            ResultSet myRsP = myStmtP.executeQuery("select * from products where farmer_id = " + id);
+                while (myRsP.next()) {
+                    String quantity = myRsP.getString("quantity");
+                    String measure = myRsP.getString("unit");
+                    String namei = myRsP.getString("name");
                     ion.addProduct(namei, measure, quantity);
                 }
                 farmers.add(ion);
             }
         }
-    }
+
 
     private void initializeTransactions(Set<Transaction> transactions) {
         Scanner sc = null;
