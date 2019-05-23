@@ -1,6 +1,7 @@
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.BorderPane;
+import ro.unibuc.fmi.pao.project.Pages.EditFarmer;
 import ro.unibuc.fmi.pao.project.classes.*;
 
 import javafx.application.Application;
@@ -45,11 +46,25 @@ public class Main extends Application {
 
 
         layout.setTop(menuBar);
-        layout.setCenter(storage.listViewFarmers);
 
-        menuBar.listFarmers.setOnAction(e -> layout.setCenter(storage.listViewFarmers));
-        menuBar.listClients.setOnAction(e -> layout.setCenter(storage.listViewClients));
-        menuBar.listShops.setOnAction(e -> layout.setCenter(storage.listViewShops));
+        menuBar.listFarmers.setOnAction(e -> {
+            layout.setCenter(storage.listViewFarmers);
+            layout.setBottom(storage.btnDeleteFarmers);
+        });
+        menuBar.listClients.setOnAction(e -> {
+            layout.setCenter(storage.listViewClients);
+            layout.setBottom(storage.btnDeleteClients);
+        });
+        menuBar.listShops.setOnAction(e -> {
+            layout.setCenter(storage.listViewShops);
+            layout.setBottom(storage.btnDeleteShops);
+        });
+
+        storage.listViewFarmers.setOnMouseClicked( e -> {
+            if(e.getClickCount() == 2) {
+                EditFarmer.display((Farmer)storage.listViewFarmers.getSelectionModel().getSelectedItem());
+            }
+        });
 
         Scene scene = new Scene(layout, 400, 350);
         stage.setScene(scene);

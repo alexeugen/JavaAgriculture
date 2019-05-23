@@ -17,6 +17,11 @@ public class Farmer extends User {
         location = new Location(city);
     }
 
+    public Farmer(String name, String city, String id) {
+        super(name, id);
+        location = new Location(city);
+    }
+
     @Override
     public String toString() {
         return super.toString();
@@ -43,6 +48,10 @@ public class Farmer extends User {
                 return true;
         }
         return false;
+    }
+
+    public void setCity (String city) {
+        location = new Location(city);
     }
 
     public boolean hasProductQuantity(String product, int quantity) {

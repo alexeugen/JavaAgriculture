@@ -2,19 +2,22 @@ package ro.unibuc.fmi.pao.project.abs;
 
 public abstract class User {
     static int counter = 0;
-    private int id;
 
     private String name;
-
+    private String id;
     private String phone;
 
     public User(String name) {
         this.name = name;
     }
 
-    public User(String name, String phone) {
+    public User(String name, String id) {
         this.name = name;
-        this.phone = phone;
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public void setName(String name) {

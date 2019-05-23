@@ -12,12 +12,12 @@ import ro.unibuc.fmi.pao.project.classes.Storage;
 
 import java.sql.*;
 
-public class AddFarmer {
+public class EditFarmer {
 
     private static Storage storage;
 
 
-    public static void display(String title) {
+    public static void display(Farmer ion) {
         try {
             storage = Storage.Storage();
         } catch (SQLException e) {
@@ -26,7 +26,6 @@ public class AddFarmer {
         Stage window = new Stage();
 
         window.initModality(Modality.APPLICATION_MODAL);
-        window.setTitle(title);
 
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 10, 10, 10));
@@ -35,6 +34,7 @@ public class AddFarmer {
 
         final TextField name = new TextField();
         name.setPromptText("Enter your first name.");
+        name.setText(ion.getName());
         GridPane.setConstraints(name, 0, 0);
         grid.getChildren().add(name);
 
@@ -42,6 +42,7 @@ public class AddFarmer {
 
         final TextField city = new TextField();
         city.setPromptText("Enter your city.");
+        city.setText(ion.getCity());
         GridPane.setConstraints(city, 0, 1);
         grid.getChildren().add(city);
 
@@ -56,11 +57,12 @@ public class AddFarmer {
                 myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo", "root" , "123456");
 
                 myStmt = myConn.createStatement();
-                Farmer ion = new Farmer(name.getText(), city.getText());
-                storage.oListFarmers.add(ion);
 
-                String query = "INSERT INTO farmers (`name`, `city`) VALUES ('"+name.getText()+"','"+ city.getText() +"');";
-                //String query = "INSERT INTO farmers (`name`, `city`) VALUES ('gina', 'Moldova');";
+
+                String query = "UPDATE farmers SET name='"+name.getText()+"', city='"+city.getText()+"' WHERE id='"+ion.getId()+"'";
+                ion.setName(name.getText());
+                ion.setCity(city.getText());
+                storage.oListFarmers.set(storage.oListFarmers.indexOf(ion), ion);
                 System.out.println(query);
                 int count = myStmt.executeUpdate(query);
                 window.close();

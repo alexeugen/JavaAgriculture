@@ -2,6 +2,7 @@ package ro.unibuc.fmi.pao.project.classes;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 
 import java.io.File;
@@ -33,8 +34,11 @@ public class Storage {
         }
     });
 
-    private ObservableList oListFarmers, oListClients, oListShops;
+    public ObservableList oListFarmers, oListClients, oListShops;
     public ListView listViewFarmers, listViewClients, listViewShops;
+    public Button btnDeleteFarmers = new Button("Delete");
+    public Button btnDeleteShops = new Button("Delete");
+    public Button btnDeleteClients = new Button("Delete");
 
     private Storage() throws SQLException {
         try {
@@ -68,6 +72,78 @@ public class Storage {
         listViewShops= new ListView(oListShops);
         listViewShops.setPrefSize(200, 250);
         listViewShops.setEditable(true);
+
+        btnDeleteFarmers.setOnAction( e -> {
+            Farmer ion =(Farmer) listViewFarmers.getSelectionModel().getSelectedItem();
+
+            oListFarmers.remove(
+                    ion);
+
+            Connection myConn = null;
+            Statement myStmt = null;
+            ResultSet myRs = null;
+            try {
+                myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo", "root" , "123456");
+
+                myStmt = myConn.createStatement();
+
+                String query = "DELETE from farmers WHERE name='" + ion.getName()+"'";
+
+                System.out.println(query);
+                int count = myStmt.executeUpdate(query);
+
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        });
+
+        btnDeleteShops.setOnAction( e -> {
+            Shop ion =(Shop) listViewShops.getSelectionModel().getSelectedItem();
+
+            oListShops.remove(
+                    ion);
+
+            Connection myConn = null;
+            Statement myStmt = null;
+            ResultSet myRs = null;
+            try {
+                myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo", "root" , "123456");
+
+                myStmt = myConn.createStatement();
+
+
+                String query = "DELETE from shops WHERE name='" + ion.getName()+"'";
+                System.out.println(query);
+                int count = myStmt.executeUpdate(query);
+
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        });
+
+        btnDeleteClients.setOnAction( e -> {
+            Client ion =(Client) listViewClients.getSelectionModel().getSelectedItem();
+
+            oListClients.remove(
+                    ion);
+
+            Connection myConn = null;
+            Statement myStmt = null;
+            ResultSet myRs = null;
+            try {
+                myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo", "root" , "123456");
+
+                myStmt = myConn.createStatement();
+
+                String query = "DELETE from clients WHERE name='" + ion.getName()+"'";
+
+                System.out.println(query);
+                int count = myStmt.executeUpdate(query);
+
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        });
     }
 
     public static Storage Storage() throws SQLException {
@@ -129,7 +205,7 @@ public class Storage {
                 String name = myRs.getString("name");
                 String city = myRs.getString("city");
                 String id = myRs.getString("id");
-                Farmer ion = new Farmer(name, city);
+                Farmer ion = new Farmer(name, city, id);
             Statement myStmtP = myConn.createStatement();
             ResultSet myRsP = myStmtP.executeQuery("select * from products where farmer_id = " + id);
                 while (myRsP.next()) {
@@ -140,7 +216,7 @@ public class Storage {
                 }
                 farmers.add(ion);
             }
-        }
+    }
 
 
     private void initializeTransactions(Set<Transaction> transactions) {

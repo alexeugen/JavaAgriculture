@@ -26,5 +26,3 @@ public class Shop extends User {
         }
     }
 }
-
-/*    ILY     */
