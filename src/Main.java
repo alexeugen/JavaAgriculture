@@ -59,6 +59,10 @@ public class Main extends Application {
             layout.setCenter(storage.listViewShops);
             layout.setBottom(storage.btnDeleteShops);
         });
+        menuBar.listTransactions.setOnAction(e -> {
+            layout.setCenter(storage.listViewTransactions);
+//            layout.setBottom(storage.btnDeleteShops);
+        });
 
         storage.listViewFarmers.setOnMouseClicked( e -> {
             if(e.getClickCount() == 2) {

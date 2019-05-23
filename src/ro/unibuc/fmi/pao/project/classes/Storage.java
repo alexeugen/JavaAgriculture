@@ -27,15 +27,16 @@ public class Storage {
     public List<Farmer> farmers = new ArrayList<>();
     public List<Shop> shops = new ArrayList<>();
     public List<Client> clients = new ArrayList<>();
-    public Set<Transaction> transactions = new TreeSet<>(new Comparator<Transaction>() {
-        @Override
-        public int compare(Transaction o1, Transaction o2) {
-            return o1.getQuantity()-o2.getQuantity();
-        }
-    });
+    public List<Transaction> transactions = new ArrayList<>();
+//    public Set<Transaction> transactions = new TreeSet<>(new Comparator<Transaction>() {
+//        @Override
+//        public int compare(Transaction o1, Transaction o2) {
+//            return o1.getQuantity()-o2.getQuantity();
+//        }
+//    });
 
-    public ObservableList oListFarmers, oListClients, oListShops;
-    public ListView listViewFarmers, listViewClients, listViewShops;
+    public ObservableList oListFarmers, oListClients, oListShops, oListTransactions;
+    public ListView listViewFarmers, listViewClients, listViewShops, listViewTransactions;
     public Button btnDeleteFarmers = new Button("Delete");
     public Button btnDeleteShops = new Button("Delete");
     public Button btnDeleteClients = new Button("Delete");
@@ -72,6 +73,11 @@ public class Storage {
         listViewShops= new ListView(oListShops);
         listViewShops.setPrefSize(200, 250);
         listViewShops.setEditable(true);
+
+        oListTransactions = FXCollections.observableArrayList(transactions);
+        listViewTransactions = new ListView(oListTransactions);
+        listViewTransactions.setPrefSize(200, 250);
+        listViewTransactions.setEditable(true);
 
         btnDeleteFarmers.setOnAction( e -> {
             Farmer ion =(Farmer) listViewFarmers.getSelectionModel().getSelectedItem();
@@ -219,43 +225,17 @@ public class Storage {
     }
 
 
-    private void initializeTransactions(Set<Transaction> transactions) {
-        Scanner sc = null;
-        String workingDir = System.getProperty("user.dir");
-        try {
-            sc = new Scanner(new File(workingDir + "/src/ro/unibuc/fmi/pao/project/files/transactions.csv"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    private void initializeTransactions(List<Transaction> transactions) throws SQLException {
+        // 3. Execute SQL query
+        Statement myStmt = myConn.createStatement();
+        ResultSet myRs = myStmt.executeQuery("select * from transactions");
 
-        while (sc.hasNextLine()) {
-            List<String> line = getRecordFromLine(sc.nextLine());
-            ListIterator<String> iter = line.listIterator();
-            while (iter.hasNext()) {
-
-                String client = iter.next();
-                String farmer = iter.next();
-                String productName = iter.next();
-                String productQuantity = iter.next();
-                String productMeasure = iter.next();
-
-                Client theClient = null;
-                Farmer theFarmer = null;
-                Product theProduct = new Product(productName, productMeasure, productQuantity);
-
-                for(int i = 0; i < clients.size(); i++)
-                    if(clients.get(i).getName().equals(client)) {
-                        theClient = clients.get(i);
-                        break;
-                    }
-
-                for(int i = 0; i < farmers.size(); i++)
-                    if(farmers.get(i).getName().equals(farmer)) {
-                        theFarmer = farmers.get(i);
-                        break;
-                    }
-                transactions.add(new Transaction(theFarmer, theClient, theProduct));
-            }
+        while (myRs.next()) {
+            String farmer = myRs.getString("farmer");
+            String client = myRs.getString("client");
+            String value = myRs.getString("value");
+            Transaction ion = new Transaction(farmer, client, value);
+            transactions.add(ion);
         }
 
     }
